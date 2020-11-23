@@ -1,0 +1,227 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Ex4_311603476_307963157</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-05-27"><meta name="DC.source" content="Ex4_311603476_307963157.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Load data</a></li><li><a href="#3">Experiment parameters</a></li><li><a href="#4">Experiment data structures</a></li><li><a href="#5">Preprocess loop</a></li><li><a href="#6">Analysis and plotting loop</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+
+<span class="comment">% The following code was written in MATLAB</span>
+<span class="comment">%   Version - R2020a</span>
+</pre><h2 id="2">Load data</h2><pre class="codeinput">InitialData = dir(<span class="string">'..\DATA_DIR\**\*.edf'</span>);
+</pre><h2 id="3">Experiment parameters</h2><pre class="codeinput">fs = 256;         <span class="comment">% frequancy sample rate</span>
+Hz = 6:0.1:14;    <span class="comment">% rate spectrum</span>
+window = 4*fs;    <span class="comment">% window length (=4sec)</span>
+channel = 19;     <span class="comment">% the elctrode channel to be analyzed</span>
+</pre><h2 id="4">Experiment data structures</h2><pre class="codeinput">Data = struct();
+
+emptyCellArr = {};
+
+<span class="comment">% building structure for each condition with specific fields</span>
+DataEO = struct(<span class="string">'name'</span>, emptyCellArr,<span class="keyword">...</span>
+                <span class="string">'hdr'</span>, emptyCellArr,<span class="keyword">...</span>
+                <span class="string">'records'</span>, emptyCellArr);
+DataEC = struct(<span class="string">'name'</span>, emptyCellArr,<span class="keyword">...</span>
+                <span class="string">'hdr'</span>, emptyCellArr,<span class="keyword">...</span>
+                <span class="string">'records'</span>, emptyCellArr);
+O = 1;  <span class="comment">% EO condition count</span>
+C = 1;  <span class="comment">% EC condition count</span>
+deleteAfter = [];   <span class="comment">% an array to delete subjects with insufficient data</span>
+</pre><h2 id="5">Preprocess loop</h2><pre class="codeinput"><span class="keyword">for</span> n = 1:length(InitialData)
+
+    <span class="comment">% Boolean variables check if the name contains the required labels</span>
+    <span class="comment">% if not, save the index of the problematic data to later on exclusion</span>
+    <span class="comment">% and skip to next data index</span>
+    EOCheck = regexp(InitialData(n).name,<span class="string">'EO'</span>);
+    ECCheck = regexp(InitialData(n).name,<span class="string">'EC'</span>);
+    EDFCheck = regexp(InitialData(n).name,<span class="string">'.edf'</span>);
+    <span class="keyword">if</span> isempty(EOCheck) &amp;&amp; isempty(ECCheck) || isempty(EDFCheck)
+        deleteAfter(end+1) = n;
+        <span class="keyword">continue</span>;
+    <span class="keyword">end</span>
+
+    <span class="comment">% Extract relevant data from the initial data</span>
+    Data(n).name = InitialData(n).name;
+    fullFileName = fullfile(InitialData(n).folder,InitialData(n).name);
+    [Data(n).hdr, Data(n).records] = edfread(fullFileName, <span class="string">'targetSignals'</span>, channel);
+
+    <span class="comment">% divide non-problematic data between conditions and keep counts</span>
+    <span class="keyword">if</span> ~isempty(EOCheck)
+        DataEO(O) = Data(n);
+        O = O + 1;
+    <span class="keyword">else</span>
+        DataEC(C) = Data(n);
+        C = C + 1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="comment">% delete excluded data from all data structure</span>
+Data(deleteAfter) = [];
+
+nSubjects = length(DataEC); <span class="comment">% number of subjects</span>
+</pre><pre class="codeoutput">Step 1 of 2: Reading requested records. (This may take a few minutes.)...
+Step 2 of 2: Parsing data...
+Step 1 of 2: Reading requested records. (This may take a few minutes.)...
+Step 2 of 2: Parsing data...
+Step 1 of 2: Reading requested records. (This may take a few minutes.)...
+Step 2 of 2: Parsing data...
+Step 1 of 2: Reading requested records. (This may take a few minutes.)...
+Step 2 of 2: Parsing data...
+Step 1 of 2: Reading requested records. (This may take a few minutes.)...
+Step 2 of 2: Parsing data...
+Step 1 of 2: Reading requested records. (This may take a few minutes.)...
+Step 2 of 2: Parsing data...
+</pre><h2 id="6">Analysis and plotting loop</h2><pre class="codeinput"><span class="keyword">for</span> n = 1:nSubjects     <span class="comment">% for each subject</span>
+    h = figure(<span class="string">'units'</span>, <span class="string">'normalized'</span>, <span class="string">'Position'</span>, [0.25 0 0.5 1]);hold <span class="string">on</span>; <span class="comment">% create figure</span>
+    h.Name = [<span class="string">'Subject no. '</span> num2str(n)];                                  <span class="comment">% write the subject number in the headline</span>
+    sgtitle([<span class="string">'Brain wave analysis for subject no. '</span> num2str(n)], <span class="string">'FontSize'</span>, 18);          <span class="comment">% give super title for all plots</span>
+
+    <span class="comment">% activate designated functions for each analysis method</span>
+    [WelchEC, WelchEO] = signalWelch(DataEC(n).records, DataEO(n).records, h, window, Hz, fs);
+    [FFTEC, FFTEO] = signalFFT(DataEC(n).records, DataEO(n).records, h, Hz, fs);
+    [DFTEC, DFTEO] = signalDFT(DataEC(n).records, DataEO(n).records, h, window, Hz, fs);
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="Ex4_311603476_307963157_01.png" alt=""> <img vspace="5" hspace="5" src="Ex4_311603476_307963157_02.png" alt=""> <img vspace="5" hspace="5" src="Ex4_311603476_307963157_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear; close all; clc;
+
+% The following code was written in MATLAB
+%   Version - R2020a
+
+%% Load data
+InitialData = dir('..\DATA_DIR\**\*.edf');
+
+%% Experiment parameters
+fs = 256;         % frequancy sample rate          
+Hz = 6:0.1:14;    % rate spectrum
+window = 4*fs;    % window length (=4sec)
+channel = 19;     % the elctrode channel to be analyzed
+
+%% Experiment data structures 
+
+Data = struct();
+
+emptyCellArr = {};
+
+% building structure for each condition with specific fields
+DataEO = struct('name', emptyCellArr,...
+                'hdr', emptyCellArr,...
+                'records', emptyCellArr);
+DataEC = struct('name', emptyCellArr,...
+                'hdr', emptyCellArr,...
+                'records', emptyCellArr);
+O = 1;  % EO condition count
+C = 1;  % EC condition count
+deleteAfter = [];   % an array to delete subjects with insufficient data
+
+%% Preprocess loop
+
+for n = 1:length(InitialData)
+    
+    % Boolean variables check if the name contains the required labels
+    % if not, save the index of the problematic data to later on exclusion
+    % and skip to next data index
+    EOCheck = regexp(InitialData(n).name,'EO');
+    ECCheck = regexp(InitialData(n).name,'EC');
+    EDFCheck = regexp(InitialData(n).name,'.edf');
+    if isempty(EOCheck) && isempty(ECCheck) || isempty(EDFCheck)
+        deleteAfter(end+1) = n;
+        continue;
+    end
+    
+    % Extract relevant data from the initial data
+    Data(n).name = InitialData(n).name;
+    fullFileName = fullfile(InitialData(n).folder,InitialData(n).name);
+    [Data(n).hdr, Data(n).records] = edfread(fullFileName, 'targetSignals', channel);
+    
+    % divide non-problematic data between conditions and keep counts
+    if ~isempty(EOCheck)
+        DataEO(O) = Data(n);
+        O = O + 1;
+    else
+        DataEC(C) = Data(n);
+        C = C + 1;
+    end
+end
+% delete excluded data from all data structure
+Data(deleteAfter) = [];
+
+nSubjects = length(DataEC); % number of subjects
+
+%% Analysis and plotting loop
+
+for n = 1:nSubjects     % for each subject
+    h = figure('units', 'normalized', 'Position', [0.25 0 0.5 1]);hold on; % create figure
+    h.Name = ['Subject no. ' num2str(n)];                                  % write the subject number in the headline
+    sgtitle(['Brain wave analysis for subject no. ' num2str(n)], 'FontSize', 18);          % give super title for all plots
+    
+    % activate designated functions for each analysis method
+    [WelchEC, WelchEO] = signalWelch(DataEC(n).records, DataEO(n).records, h, window, Hz, fs);
+    [FFTEC, FFTEO] = signalFFT(DataEC(n).records, DataEO(n).records, h, Hz, fs);
+    [DFTEC, DFTEO] = signalDFT(DataEC(n).records, DataEO(n).records, h, window, Hz, fs);
+end
+
+##### SOURCE END #####
+--></body></html>
