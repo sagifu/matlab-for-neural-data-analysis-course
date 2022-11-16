@@ -4,7 +4,8 @@ clear; close all; clc;
 %   Version - R2020a
 
 %% Load data
-InitialData = dir('..\DATA_DIR\**\*.edf');
+dirPath = '..\DATA_DIR\';
+initialData = dir([dirPath '**\*.edf']);
 
 %% Experiment parameters
 fs = 256;         % frequancy sample rate          
@@ -31,22 +32,22 @@ deleteAfter = [];   % an array to delete subjects with insufficient data
 
 %% Preprocess loop
 
-for n = 1:length(InitialData)
+for n = 1:length(initialData)
     
     % Boolean variables check if the name contains the required labels
     % if not, save the index of the problematic data to later on exclusion
     % and skip to next data index
-    EOCheck = regexp(InitialData(n).name,'EO');
-    ECCheck = regexp(InitialData(n).name,'EC');
-    EDFCheck = regexp(InitialData(n).name,'.edf');
+    EOCheck = regexp(initialData(n).name,'EO');
+    ECCheck = regexp(initialData(n).name,'EC');
+    EDFCheck = regexp(initialData(n).name,'.edf');
     if isempty(EOCheck) && isempty(ECCheck) || isempty(EDFCheck)
         deleteAfter(end+1) = n;
         continue;
     end
     
     % Extract relevant data from the initial data
-    Data(n).name = InitialData(n).name;
-    fullFileName = fullfile(InitialData(n).folder,InitialData(n).name);
+    Data(n).name = initialData(n).name;
+    fullFileName = fullfile(initialData(n).folder,initialData(n).name);
     [Data(n).hdr, Data(n).records] = edfread(fullFileName, 'targetSignals', channel);
     
     % divide non-problematic data between conditions and keep counts
